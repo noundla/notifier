@@ -25,13 +25,19 @@ class NotificationService : NotificationListenerService() {
 
             val text = extras.getString("android.text", "")
             val title = extras.getString("android.title", "")
+            val notificationTimeMillis : Long = sbn.postTime;
+            val lastNotificationTimeMillis = Util.getLastNotificationPostedTime(context);
             Log.d(TAG, "text: $text , title: $title")
             val expText = Util.getKey(context)
-            if (text != null && text.contains(expText, true) || title != null && title.contains(expText, true)) {
+            val isTextMatched = text != null && text.contains(expText, true);
+            val isTitleMatched = title != null && title.contains(expText, true);
+            val isNewNotification = lastNotificationTimeMillis != notificationTimeMillis;
+            Log.d(TAG,"isTextMatched:"+isTextMatched+", isTitleMatched:"+isTitleMatched+", isNewNotification:"+isNewNotification)
+            if ((isTextMatched || isTitleMatched) && isNewNotification) {
                 Util.playSound(context)
+                Util.saveNotificationPostedTime(context,  notificationTimeMillis)
                 Log.d(TAG, "Starting ring")
             }
         }
-
     }
 }

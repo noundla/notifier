@@ -15,46 +15,31 @@ import com.google.android.material.textfield.TextInputEditText
 class MainActivity : AppCompatActivity() {
     private lateinit var button : View
     private lateinit var sound : View
-    private lateinit var text : View
-    private lateinit var keysInput : TextInputEditText
+    private lateinit var keyTextView : TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        button = findViewById<View>(R.id.mybutton);
+        button = findViewById<View>(R.id.setupButton);
         sound = findViewById<View>(R.id.sound);
-        text = findViewById<View>(R.id.text);
-        keysInput = findViewById<TextInputEditText>(R.id.keys_input);
+        keyTextView = findViewById<TextView>(R.id.keyText)
+
+
+
+        // Enable notification accesssuper.onStart()
         button.setOnClickListener(View.OnClickListener {
-            val intent = Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+            val intent = Intent(this, SetupActivity::class.java)
             startActivity(intent)
         })
+
+        //stop sound button
         sound.setOnClickListener(View.OnClickListener {
             Util.stopSound(applicationContext)
         })
-        keysInput.setText(Util.getKey(applicationContext))
-        keysInput.setOnEditorActionListener(TextView.OnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                Util.saveKey(applicationContext, keysInput.text.toString())
-            }
-            return@OnEditorActionListener false
-        })
     }
 
-    override fun onResume() {
-        super.onResume()
-//        if (checkNotificationPermission()) {
-//            button.visibility = View.GONE
-//            text.visibility = View.VISIBLE
-//        } else {
-//            button.visibility = View.VISIBLE
-//            text.visibility = View.GONE
-//        }
-
+    override fun onStart() {
+        super.onStart()
+        keyTextView.setText("Listening for text: ${Util.getKey(applicationContext)}")
     }
-
-    private fun checkNotificationPermission() : Boolean {
-        val manager = NotificationManagerCompat.from(this)
-        return manager.areNotificationsEnabled()
-    }
-
 }
